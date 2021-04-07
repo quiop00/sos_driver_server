@@ -13,10 +13,10 @@ const updateLocation = async (req, res) => {
             isOnMap: req.body.isOnMap
         };
         if (user.role == "driver") {
-            await Driver.findOneAndUpdate(filter, updateData);
+            await Driver.UpdateOne(filter, updateData);
         }
         if (user.role == "servicer") {
-            await Servicer.findOneAndUpdate(filter, updateData);
+            await Servicer.UpdateOne(filter, updateData);
         }
         return res.status(201).json({
             message: "OK",
