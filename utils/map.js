@@ -4,6 +4,7 @@ const Servicer = require("../models/servicer_model");
 const updateLocation = async (req, res) => {
     try {
         var user = await getUserFromToken(req, res);
+    
         if (!user) {
             return res.status(201).json("Not Found user");
         }
@@ -12,11 +13,13 @@ const updateLocation = async (req, res) => {
             currentPosition: req.body.currentPosition,
             isOnMap: req.body.isOnMap
         };
+        console.log(filter);
+        console.log(updateData);
         if (user.role == "driver") {
-            await Driver.UpdateOne(filter, updateData);
+            await Driver.findOneAndUpdate(filter, updateData);
         }
         if (user.role == "servicer") {
-            await Servicer.UpdateOne(filter, updateData);
+            await Servicer.findOneAndUpdate(filter, updateData);
         }
         return res.status(201).json({
             message: "OK",

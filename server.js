@@ -41,7 +41,6 @@ const startApp=async()=>{
             message:"Error",
             badge:true
         });
-        print(err);
         startApp();       
     }
 };
