@@ -17,6 +17,7 @@ app.use(passport.initialize());
 require("./middlewares/passport")(passport);
 
 app.use("/api/users", require("./routes/users"));
+//app.use("/api/users/profile:")
 
 app.use("/api/map",require("./routes/map"));
 

@@ -56,7 +56,6 @@ const userRegister= async(userDesc,res)=>{
       }
 };
 
-
 //auth login
 
 const userLogin=async(userInfo,res)=>{
@@ -79,7 +78,6 @@ const userLogin=async(userInfo,res)=>{
             {
                 user_id:user._id,
                 username: user.username,
-                phoneNumber:user.phoneNumber,
                 role: user.role
             },
             SECRET,
@@ -88,7 +86,6 @@ const userLogin=async(userInfo,res)=>{
         let result={
             _id:user._id,
             username: user.username,
-            phoneNumber: user.phoneNumber,
             role: user.role,
             token: `Bearer ${token}`,
             expiresIn: 168
