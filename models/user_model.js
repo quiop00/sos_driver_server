@@ -19,11 +19,7 @@ const UserData={
         type: Boolean,
         default: false
     },
-    idNotifies:[
-        {
-            idNotify:String
-        }
-    ]
+    
 };
 const UserSchema= new Schema(UserData);
 const User=model("user",UserSchema);

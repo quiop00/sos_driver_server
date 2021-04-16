@@ -1,66 +1,72 @@
-const Users = require("../models/user_model");
-const bcrypt = require("bcryptjs");
+const Notify = require("../models/notify_model");
+const { getUserFromToken } = require("./authentication");
+const Driver = require("../models/driver_model");
+const Servicer = require("../models/servicer_model");
+const { initRating } = require("./rating");
 
-const findById = async (req,res)=>{
-    const user= Users.findById(req.params._id);
-    if(!user){
-        return res.status(201).json({
-            message: "Không tồn tại.",
-            success: false,
-          });
-    }
-    else{
-        let result={
-            _id:user._id,
-            username: user.username,
-            address: user.address,
-            rating: user.rating,
-            phoneNumber: user.phoneNumber,
-        }
-        return res.status(201).json({
-            ...result,
-            success: true,
-        });
-    }
-};
-
-const updateUser = async (req, res) => {
-  if (!req.params.id) {
-    return res.status(500).send("ID is required");
-  } else {
-    console.log(req.body);
-    let checkPassword = req.body.password.substring(0,1);
-    console.log(checkPassword);
-    let password;
-    if (checkPassword === "$") {
-      password = req.body.password;
-    } else {
-      password = await bcrypt.hash(req.body.password, 11);
-    }
-    Users.updateOne(
-      {
-        _id: req.params.id,
-      },
-      {
-        userName: req.body.userName,
-        email: req.body.email,
-        phoneNumber: req.body.phoneNumber,
-        password: password,
-        address: req.body.address,
-      },
-      function (err) {
-        if (err) return res.status(500).json(err);
-        else {
-          Users.find((err, result) => {
-            if (err) {
-              res.status(500).json(err);
-            } else {
-              res.json(result);
-            }
-          });
-        }
+const acceptSOS = async (req, res) => {
+  try {
+      var user = await getUserFromToken(req, res);
+      var filter = {
+          _id: req.body._id,
+          type: "sos"
       }
-    );
+      var data = await Notify.findOne(filter);
+      if (!data)
+          return res.status(201).json({
+              status: false
+          });
+      var servicers = data.user;
+      console.log(servicers);
+      if (!servicers)
+          return res.status(201).json({
+              status: false
+          });
+
+      var update = [];
+      for (var i in servicers) {
+          if (servicers[i].username != user.username) {
+              update.push({
+                  username: servicers[i].username,
+                  status: "Reject"
+              });
+          }
+          else {
+              update.push({
+                  username: servicers[i].username,
+                  status: "OK"
+              });
+          }
+      }
+      await Notify.findOneAndUpdate(filter, { "user": update });
+      await initRating(user.username, data.driver, res);
+      return res.status(201).json({
+          message: "Đã đồng ý cứu hộ",
+          status: true
+      });
+  } catch (error) {
+      return res.status(500).json({
+          status: false
+      });
   }
-};
-module.exports = { updateUser, deleteUser,findById };
+}
+const rejectSOS = async (req, res) => {
+  try {
+      var user = await getUserFromToken(req, res);
+      var filter = {
+          _id: req.body._id,
+          type: "sos",
+          "user.username": user.username
+      }
+      await Notify.updateOne(filter, { $set: { "user.$.status": "Reject" } });
+      return res.status(201).json({
+          message: "Đã từ chối cứu hộ",
+          status: true
+      });
+  } catch (error) {
+      return res.status(500).json({
+          status: false
+      });
+  }
+}
+module.exports={acceptSOS, rejectSOS}

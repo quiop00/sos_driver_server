@@ -17,11 +17,16 @@ app.use(passport.initialize());
 require("./middlewares/passport")(passport);
 
 app.use("/api/users", require("./routes/users"));
-//app.use("/api/users/profile:")
 
 app.use("/api/map",require("./routes/map"));
 
+app.use("/api/notify",require("./routes/notifications"));
 
+app.use("/api/favourites",require("./routes/favourites"));
+
+app.use("/api/rating",require("./routes/rating"));
+
+app.use("/api/sos",require("./routes/servicer"));
 
 const startApp=async()=>{
     try{

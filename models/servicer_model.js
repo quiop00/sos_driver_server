@@ -22,7 +22,7 @@ var ServicerSchema =new Schema({
         }
         ],
         default: []
-    }
+    },
 });
 ServicerSchema.add(UserData);
 const Servicer= model("servicer",ServicerSchema);

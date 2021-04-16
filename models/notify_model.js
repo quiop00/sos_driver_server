@@ -2,19 +2,24 @@ const {Schema,model} =require("mongoose");
 
 const NotifySchema= new Schema({
     title: String,
-    isBookingType:{
-        type: Boolean,
-        default: false
+    type:{
+        type: String,
+        enum: ["sos","rated"],
+        default: "sos"
     },
-    isBooked:{
-        type: Boolean,
-        default: false
-    },
-    idUsers:[
-        {
-            idUser: String
+    user: [{
+        username: String,
+        status:{
+            type: String,
+            enum: ["Ok","Reject","None","rated"],
+            default: "None"
         }
-    ]
+    }],
+    time: {
+        type: Date,
+        default: Date.now
+    },
+    driver: String
 });
 
 const Notify = model("notify",NotifySchema);

@@ -11,7 +11,6 @@ const {
 router.post("/update-location", async (req, res) => {
     await updateLocation(req, res);
   });
-  
   // Users Login Route
 router.get("", async (req, res) => {
     await getListByDistance(req,res);

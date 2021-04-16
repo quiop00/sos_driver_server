@@ -39,72 +39,27 @@ const getListByDistance = async (req, res) => {
         if (!user) {
             return res.status(201).json("Not Found user");
         }
-        var list;
+        //var list;
         var filter = [];
+        var result;
+        filter=await getUsersByDistance(req,res,user);
+        console.log(filter);
         if (user.role == "driver") {
-            var datas = await Driver.findOne({ username: user.username });
-            console.log(datas+" A");
-            list = await Servicer.find();
-            console.log(list);
-            //console.log()
-            for(var data in list){
-                console.log(list[data]);
-                if(!list[data]["isOnMap"])
-                    continue;
-                console.log("here");    
-                var latitude = list[data]["currentPosition"]["latitude"];
-                var longtitude = list[data]["currentPosition"]["longtitude"];
-                console.log(latitude);
-                console.log(datas["currentPosition"]["latitude"]);
-                var distance=getDistanceFromLatLonInKm(
-                    datas["currentPosition"]["latitude"],
-                    datas["currentPosition"]["longtitude"],
-                    latitude,longtitude);    
-                console.log(req.body.distance);    
-                if (req.body.distance >= distance) {
-                        filter.push(list[data]);
-                }
-            };
-            var result={
+            result={
                 servicers: filter
             }
-
-            return res.status(201).json({
-                ...result,
-                message: "OK",
-                success: true,
-              });
         }
         if (user.role == "servicer") {
-            var datas = await Servicer.findOne({ username: user.username });
-            list = await Driver.find();
-            for(var data in list){
-                console.log(list[data]);
-                if(!list[data]["isOnMap"])
-                    continue;
-                console.log("here");    
-                var latitude = list[data]["currentPosition"]["latitude"];
-                var longtitude = list[data]["currentPosition"]["longtitude"];
-                console.log(latitude);
-                console.log(datas["currentPosition"]["latitude"]);
-                var distance=getDistanceFromLatLonInKm(
-                    datas["currentPosition"]["latitude"],
-                    datas["currentPosition"]["longtitude"],
-                    latitude,longtitude);    
-                console.log(req.body.distance);    
-                if (req.body.distance >= distance) {
-                        filter.push(list[data]);
-                }
-            };
-            var result={
+            result={
                 drivers: filter
             }
-            return res.status(201).json({
-                ...result,
-                message: "OK",
-                success: true,
-              });
+            
         }
+        return res.status(201).json({
+            ...result,
+            message: "OK",
+            success: true,
+          });
     }
     catch (e) {
         return res.status(500).json({
@@ -114,6 +69,56 @@ const getListByDistance = async (req, res) => {
     }
 }
 
+const getUsersByDistance= async(req,res,user)=>{
+    var list;
+    var filter = [];
+    if (user.role == "servicer") {
+        var datas = await Servicer.findOne({ username: user.username });
+        list = await Driver.find();
+        for(var data in list){
+            console.log(list[data]);
+            if(!list[data]["isOnMap"])
+                continue;  
+            var latitude = list[data]["currentPosition"]["latitude"];
+            var longtitude = list[data]["currentPosition"]["longtitude"];
+            var distance=getDistanceFromLatLonInKm(
+                datas["currentPosition"]["latitude"],
+                datas["currentPosition"]["longtitude"],
+                latitude,longtitude);    
+            console.log(req.body.distance);    
+            if (req.body.distance >= distance) {
+                    filter.push(list[data]);
+            }
+        };
+        return filter;
+    }
+    if (user.role == "driver") {
+        var datas = await Driver.findOne({ username: user.username });
+        //console.log(datas+" A");
+        list = await Servicer.find();
+        //console.log(list);
+        //console.log()
+        for(var data in list){
+            //console.log(list[data]);
+            if(!list[data]["isOnMap"])
+                continue;
+            //console.log("here");    
+            var latitude = list[data]["currentPosition"]["latitude"];
+            var longtitude = list[data]["currentPosition"]["longtitude"];
+            //console.log(latitude);
+            //console.log(datas["currentPosition"]["latitude"]);
+            var distance=getDistanceFromLatLonInKm(
+                datas["currentPosition"]["latitude"],
+                datas["currentPosition"]["longtitude"],
+                latitude,longtitude);       
+            if (req.body.distance >= distance) {
+                    filter.push(list[data]);
+            }
+        };
+        //console.log("ss"+filter+"AA");
+        return filter;
+    }
+}
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
 
     console.log(lat1+":"+lon1+" - "+ lat2+":"+lon2);
@@ -139,4 +144,4 @@ function deg2rad(deg) {
 }
 
 
-module.exports={updateLocation,getListByDistance}
+module.exports={updateLocation,getListByDistance,getUsersByDistance}
