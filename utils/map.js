@@ -85,8 +85,8 @@ const getUsersByDistance= async(req,res,user)=>{
                 datas["currentPosition"]["latitude"],
                 datas["currentPosition"]["longtitude"],
                 latitude,longtitude);    
-            console.log(req.body.distance);    
-            if (req.body.distance >= distance) {
+            console.log(req.query.distance);    
+            if (req.query.distance >= distance) {
                     filter.push(list[data]);
             }
         };
@@ -111,7 +111,7 @@ const getUsersByDistance= async(req,res,user)=>{
                 datas["currentPosition"]["latitude"],
                 datas["currentPosition"]["longtitude"],
                 latitude,longtitude);       
-            if (req.body.distance >= distance) {
+            if (req.query.distance >= distance) {
                     filter.push(list[data]);
             }
         };

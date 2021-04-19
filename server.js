@@ -20,6 +20,7 @@ app.use("/api/users", require("./routes/users"));
 
 app.use("/api/map",require("./routes/map"));
 
+
 app.use("/api/notify",require("./routes/notifications"));
 
 app.use("/api/favourites",require("./routes/favourites"));
